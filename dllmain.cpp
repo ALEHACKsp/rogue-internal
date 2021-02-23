@@ -435,29 +435,6 @@ VOID CreateConsole()
 
 #include "minhook/MinHook.h"
 
-__int64(*CalculateSpread)(uintptr_t, int*, int*) = nullptr;
-__int64 __fastcall CalculateSpreadHook(__int64 a1, DWORD* a2, DWORD* a3)
-{
-
-	__int64 result = 0;
-	if (Settings::NoSpread)
-	{
-		return result;
-	}
-	else if (*(DWORD*)(a1 + 120))
-	{
-		*a2 = *(DWORD*)(*(DWORD64*)(a1 + 112) + 4i64);
-		result = *(DWORD64*)(a1 + 112);
-		*a3 = *(DWORD*)(28i64 * *(int*)(a1 + 120) + result - 24);
-	}
-	else
-	{
-		*a2 = 0;
-		*a3 = 0;
-	}
-
-}
-
 bool Main() {
 	//CreateConsole();
 	HWND window = FindWindow(0, _xor_(L"Rogue Company  ").c_str()); //you can make it find UnrealWindow if you want doesnt change anything
@@ -496,11 +473,6 @@ bool Main() {
 	auto addr = Scanners::PatternScan(xorthis("48 89 5C 24 10 48 89 74 24 18 55 41 56 41 57 48 8B EC"));
 
 	MH_CreateHook((LPVOID)addr, GetPlayerViewPointHook, reinterpret_cast<PVOID*>(&GetViewPoint));
-	MH_EnableHook((LPVOID)addr);
-
-	addr = Scanners::PatternScan(xorthis("83 79 78 ? 4C 8B C9 75 0F 0F 57 C0 C7 02 ? ? ? ? F3 41 0F 11 ? C3 48 8B 41 70 8B 48 04 89 0A 49 63 41 78 48 6B C8 1C 49 8B 41 70 F3 0F 10 44 01 ? F3 41 0F 11 ? C3"));
-
-	MH_CreateHook((LPVOID)addr, CalculateSpreadHook, reinterpret_cast<PVOID*>(&CalculateSpread));
 	MH_EnableHook((LPVOID)addr);
 }
 
